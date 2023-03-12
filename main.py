@@ -1,26 +1,38 @@
 import asyncio
+import json
 import logging
 import os
 
 from aiogram import Bot, Dispatcher
-from dotenv import dotenv_values
 
+from bot.handlers.get_message import register_get_message
 from bot.handlers.start import register_welcome
 
 if not os.path.exists('bot/logs/'):
     os.mkdir('bot/logs/')
 
+if not os.path.exists('media/'):
+    os.mkdir('media/')
+
 logging.basicConfig(filename='bot/logs/bot.log', level=logging.INFO, encoding='utf-8')
 
-TOKEN = dotenv_values('.env').get('TOKEN')
+with open('config.json', 'r', encoding='utf-8') as file:
+    config = json.load(file)
+
+
+TOKEN = config.get('TOKEN')
+CHANNELS = config.get('CHANNEL_LOGIN')
+POSTER_CHANNEL = CHANNELS[0]
+
+bot = Bot(token=TOKEN)
 
 
 def register_all_handlers(dp):
     register_welcome(dp)
+    register_get_message(dp)
 
 
 async def main():
-    bot = Bot(token=TOKEN)
     dp = Dispatcher(bot)
     register_all_handlers(dp)
     try:
