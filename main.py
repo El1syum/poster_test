@@ -7,6 +7,7 @@ from aiogram import Bot, Dispatcher
 
 from bot.handlers.get_message import register_get_message
 from bot.handlers.start import register_welcome
+from bot.middleware.album import AlbumMiddleware
 
 if not os.path.exists('bot/logs/'):
     os.mkdir('bot/logs/')
@@ -32,9 +33,14 @@ def register_all_handlers(dp):
     register_get_message(dp)
 
 
+def register_all_middleware(dp):
+    dp.middleware.setup(AlbumMiddleware())
+
+
 async def main():
     dp = Dispatcher(bot)
     register_all_handlers(dp)
+    register_all_middleware(dp)
     try:
         await dp.start_polling()
     finally:
